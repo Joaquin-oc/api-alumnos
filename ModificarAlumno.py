@@ -1,9 +1,13 @@
 import boto3
+import json
 
 def lambda_handler(event, context):
-    tenant_id = event['tenant_id']
-    alumno_id = event['alumno_id']
-    alumno_datos = event['alumno_datos']
+    # Parsear el body que llega como string desde API Gateway
+    body = json.loads(event['body'])
+    
+    tenant_id = body['tenant_id']
+    alumno_id = body['alumno_id']
+    alumno_datos = body['alumno_datos']
 
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('t_alumnos')
@@ -20,5 +24,6 @@ def lambda_handler(event, context):
     )
     return {
         'statusCode': 200,
-        'response': response
+        'headers': {'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps({'statusCode': 200, 'response': 'Alumno modificado'})
     }
